@@ -6,7 +6,7 @@ A decentralized task management system built on Stacks blockchain using Clarity 
 - Create and manage task lists
 - Add/update/delete tasks 
 - Assign tasks to addresses
-- Task completion tracking
+- Task completion tracking with multiple status states
 - Task history and audit trail
 
 ## Contract Functions
@@ -16,6 +16,7 @@ A decentralized task management system built on Stacks blockchain using Clarity 
 - update-task
 - delete-task
 - assign-task
+- update-task-status (supports pending, in-progress, completed, cancelled)
 - complete-task
 
 ### Task Lists
@@ -27,6 +28,13 @@ A decentralized task management system built on Stacks blockchain using Clarity 
 - get-task-details
 - get-list-details
 - get-user-tasks
+
+## Task Status States
+Tasks can have the following status states:
+- pending: Initial state of a new task
+- in-progress: Task is actively being worked on
+- completed: Task has been finished
+- cancelled: Task has been cancelled
 
 ## Testing
 Tests are located in the `/tests` directory and can be run using Clarinet.
