@@ -64,3 +64,44 @@ Clarinet.test({
     block.receipts[1].result.expectErr().expectUint(401);
   }
 });
+
+Clarinet.test({
+  name: "Ensure task status can be updated by creator or assignee",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    const deployer = accounts.get("deployer")!;
+    const wallet1 = accounts.get("wallet_1")!;
+    
+    let block = chain.mineBlock([
+      Tx.contractCall(
+        "taskloom",
+        "create-task",
+        [
+          types.ascii("Test Task"),
+          types.ascii("Test Description")
+        ],
+        deployer.address
+      ),
+      Tx.contractCall(
+        "taskloom",
+        "assign-task",
+        [
+          types.uint(0),
+          types.principal(wallet1.address)
+        ],
+        deployer.address
+      ),
+      Tx.contractCall(
+        "taskloom",
+        "update-task-status",
+        [
+          types.uint(0),
+          types.ascii("in-progress")
+        ],
+        wallet1.address
+      )
+    ]);
+    
+    assertEquals(block.receipts.length, 3);
+    block.receipts[2].result.expectOk();
+  }
+});
