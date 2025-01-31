@@ -4,6 +4,7 @@
 (define-constant contract-owner tx-sender)
 (define-constant err-not-found (err u404))
 (define-constant err-unauthorized (err u401))
+(define-constant err-invalid-status (err u400))
 
 ;; Data Variables
 (define-data-var task-count uint u0)
@@ -82,6 +83,28 @@
       (merge task 
         {
           assignee: (some assignee),
+          updated-at: block-height
+        }
+      )
+    ))
+  )
+)
+
+(define-public (update-task-status (task-id uint) (new-status (string-ascii 16)))
+  (let ((task (unwrap! (get-task-details task-id) err-not-found)))
+    (asserts! (or (is-eq (get creator task) tx-sender) 
+                 (is-eq (get assignee task) (some tx-sender))) 
+             err-unauthorized)
+    (asserts! (or (is-eq new-status "pending")
+                 (is-eq new-status "in-progress")
+                 (is-eq new-status "completed")
+                 (is-eq new-status "cancelled"))
+             err-invalid-status)
+    (ok (map-set tasks
+      { task-id: task-id }
+      (merge task 
+        {
+          status: new-status,
           updated-at: block-height
         }
       )
